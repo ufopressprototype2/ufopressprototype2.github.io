@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ComicVerse</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<header>
+  <nav class="navbar navbar-expand-lg p-3 sticky-top" id="navBarHeader">
+    <div class="container-fluid">
+      <a id="logoHeader" class="navbar-brand" href="#"></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link active no-link" id="liALogin" aria-current="page" data-bs-toggle="modal"
+              data-bs-target="#loginModal">
+              Iniciar Sesión
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#">Inicio</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link no-link" data-bs-toggle="modal" data-bs-target="#mostrarProductosModal">Historietas</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle no-link" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Categorías
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item no-link" data-category="Acción" data-bs-toggle="modal" data-bs-target="#mostrarProductosModal">Acción</a></li>
+              <li><a class="dropdown-item no-link" data-category="Comedia" data-bs-toggle="modal" data-bs-target="#mostrarProductosModal">Comedia</a></li>
+              <li><a class="dropdown-item no-link" data-category="Ciencia ficción" data-bs-toggle="modal" data-bs-target="#mostrarProductosModal">Ciencia ficción</a></li>
+            </ul>
+          </li>
+        </ul>
+        <form class="d-flex" role="search">
+          <input id="searchInput" class="form-control me-2" type="search" placeholder="Busca aquí: "
+            aria-label="Search" />
+        </form>
+        <li class="nav-item d-none"></li>
+        <a class="nav-link" href="#" id="liLogout">
+          Cerrar sesión
+        </a>
+        </li>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<body>
+  <!-- Modal para Mostrar Productos con Paginación -->
+  <div class="modal fade" id="mostrarProductosModal" tabindex="-1" aria-labelledby="mostrarProductosModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header d-flex justify-content-center">
+          <h5 class="modal-title" id="mostrarProductosModalLabel">Lista de Productos</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Contenedor para mostrar los productos -->
+          <div class="container mb-5 mt-5">
+            <div class="row row-cols-1 row-cols-3 g-4 text-center" id="productosContainer">
+              <!-- Aquí se cargarán los productos dinámicamente -->
+            </div>
+          </div>
+
+          <!-- Paginación -->
+          <div id="paginacionContainer" class="mt-3">
+            <h6>Seleccionar página:</h6>
+            <!-- Aquí se crearán los radios dinámicamente -->
+          </div>
+        </div>
+        <div class="modal-footer d-flex justify-content-center w-100">
+          <button type="button" class="btn btn-warning" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para agregar usuario (Cliente o Vendedor) -->
+  <div class="modal fade" id="agregarUsuarioModal" tabindex="-1" aria-labelledby="agregarUsuarioModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="agregarUsuarioModalLabel">Agregar Usuario</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="formAgregarUsuario" action="./php/agregarUsuario.php" method="post" class="needs-validation"
+            novalidate>
+            <!-- Tipo de Usuario (Cliente o Vendedor) -->
+            <div class="mb-3">
+              <label for="tipoUsuario" class="form-label">Tipo de Usuario</label>
+              <select class="form-select" id="tipoUsuarioModal" name="tipoUsuario" required>
+                <option value="" disabled selected>Selecciona un tipo de usuario</option>
+                <option value="CLI">Cliente</option>
+                <option value="VEN">Vendedor</option>
+              </select>
+              <div class="invalid-feedback">
+                Por favor, selecciona un tipo de usuario.
+              </div>
+            </div>
+
+            <!-- Nombre de Usuario -->
+            <div class="mb-3">
+              <label for="nombreUser" class="form-label">Nombre de Usuario</label>
+              <input type="text" class="form-control" id="nombreUserModal" name="nombreUser"
+                placeholder="Nombre de usuario" required>
+              <div class="invalid-feedback">
+                Por favor, introduce un nombre de usuario.
+              </div>
+            </div>
+
+            <!-- Correo Electrónico -->
+            <div class="mb-3">
+              <label for="email" class="form-label">Correo Electrónico</label>
+              <input type="email" class="form-control" id="emailModal" name="email" placeholder="correo@ejemplo.com"
+                required>
+              <div class="invalid-feedback">
+                Por favor, introduce un correo válido.
+              </div>
+            </div>
+
+            <!-- Contraseña -->
+            <div class="mb-3">
+              <label for="password" class="form-label">Contraseña</label>
+              <input type="password" class="form-control" id="passwordModal" name="password" placeholder="Contraseña"
+                required>
+              <div class="invalid-feedback">
+                Por favor, introduce una contraseña.
+              </div>
+            </div>
+
+            <!-- Número de Teléfono -->
+            <div class="mb-3">
+              <label for="nroTelefono" class="form-label">Número de Teléfono</label>
+              <input type="tel" class="form-control" id="nroTelefonoModal" name="nroTelefono"
+                placeholder="Ej: 091234567" required>
+              <div class="invalid-feedback">
+                Por favor, introduce un número de teléfono.
+              </div>
+            </div>
+
+            <!-- Nacionalidad -->
+            <div class="mb-3">
+              <label for="nacionalidad" class="form-label">Nacionalidad</label>
+              <input type="text" class="form-control" id="nacionalidadModal" name="nacionalidad"
+                placeholder="Ej: Uruguaya" required>
+              <div class="invalid-feedback">
+                Por favor, introduce una nacionalidad.
+              </div>
+            </div>
+
+            <!-- Año de Nacimiento -->
+            <div class="mb-3">
+              <label for="anioNacimiento" class="form-label">Año de Nacimiento</label>
+              <input type="number" class="form-control" id="anioNacimientoModal" name="anioNacimiento"
+                placeholder="Ej: 1995" required>
+              <div class="invalid-feedback">
+                Por favor, introduce tu año de nacimiento.
+              </div>
+            </div>
+
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              <button type="submit" class="btn btn-warning">Agregar Usuario</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para generar reportes -->
+  <div class="modal fade" id="reporteModal" tabindex="-1" aria-labelledby="reporteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="reporteModalLabel">Generar Reporte</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="formReporte" action="./php/generarReporte.php" method="post" class="needs-validation" novalidate>
+            <!-- Contenido del reporte -->
+            <div class="mb-3">
+              <label for="contenidoReporte" class="form-label">Contenido del Reporte</label>
+              <textarea class="form-control" id="contenidoReporte" name="contenidoReporte" rows="4"
+                placeholder="Describe el contenido del reporte aquí..." required></textarea>
+              <div class="invalid-feedback">Por favor, introduce el contenido del reporte.</div>
+            </div>
+
+            <!-- Campos ocultos para el email y nombre del admin -->
+            <input type="hidden" id="emailAdmin" name="emailAdmin" />
+            <input type="hidden" id="nombreAdmin" name="nombreAdmin" />
+
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              <button type="submit" class="btn btn-warning">Generar Reporte</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para modificar producto -->
+  <div class="modal fade" id="modificarProductoModal" tabindex="-1" aria-labelledby="modificarProductoModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modificarProductoModalLabel">Modificar Producto</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Formulario para buscar el producto por ISBN -->
+          <form id="formBuscarProducto">
+            <div class="mb-3">
+              <label for="isbnBuscar" class="form-label">Buscar producto por ISBN</label>
+              <input type="text" class="form-control" id="isbnBuscar" name="isbnBuscar"
+                placeholder="Ej: 978-3-16-148410-0" required>
+              <div class="invalid-feedback">
+                Por favor, ingrese un ISBN válido para buscar el producto.
+              </div>
+            </div>
+            <button type="button" class="btn btn-warning" id="buscarProductoBtn">Buscar Producto</button>
+          </form>
+
+          <hr>
+
+          <!-- Formulario para modificar el producto (autocompletar después de buscar) -->
+          <form id="formModificarProducto" style="display: none;">
+            <!-- Campos de producto -->
+            <div class="mb-3">
+              <label for="nombreProducto" class="form-label">Nombre del Producto</label>
+              <input type="text" class="form-control" id="nombreProducto" name="nombreProducto" required>
+            </div>
+            <div class="mb-3">
+              <label for="imagenProducto" class="form-label">URL de la Imagen</label>
+              <input type="text" class="form-control" id="imagenProducto" name="imagenProducto">
+            </div>
+            <div class="mb-3">
+              <label for="editorialProducto" class="form-label">Editorial</label>
+              <input type="text" class="form-control" id="editorialProducto" name="editorialProducto" required>
+            </div>
+            <div class="mb-3">
+              <label for="autoresProducto" class="form-label">Autores</label>
+              <input type="text" class="form-control" id="autoresProducto" name="autoresProducto" required>
+            </div>
+            <div class="mb-3">
+              <label for="paginasProducto" class="form-label">Páginas</label>
+              <input type="number" class="form-control" id="paginasProducto" name="paginasProducto" required>
+            </div>
+            <div class="mb-3">
+              <label for="tamanioProducto" class="form-label">Tamaño</label>
+              <input type="text" class="form-control" id="tamanioProducto" name="tamanioProducto" required>
+            </div>
+            <div class="mb-3">
+              <label for="contenidoProducto" class="form-label">Contenido</label>
+              <textarea class="form-control" id="contenidoProducto" name="contenidoProducto" rows="3"
+                required></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="formatoProducto" class="form-label">Formato</label>
+              <input type="text" class="form-control" id="formatoProducto" name="formatoProducto" required>
+            </div>
+            <div class="mb-3">
+              <label for="edadProducto" class="form-label">Edad recomendada</label>
+              <input type="number" class="form-control" id="edadProducto" name="edadProducto" required>
+            </div>
+            <div class="mb-3">
+              <label for="interiorProducto" class="form-label">Interior</label>
+              <input type="text" class="form-control" id="interiorProducto" name="interiorProducto">
+            </div>
+            <div class="mb-3">
+              <label for="precioProducto" class="form-label">Precio</label>
+              <input type="number" step="0.01" class="form-control" id="precioProducto" name="precioProducto" required>
+            </div>
+            <div class="mb-3">
+              <label for="categoriaProducto" class="form-label">Categoría</label>
+              <input type="text" class="form-control" id="categoriaProducto" name="categoriaProducto" required>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              <button type="submit" class="btn btn-warning">Modificar Producto</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para eliminar producto -->
+  <div class="modal fade" id="eliminarProductoModal" tabindex="-1" aria-labelledby="eliminarProductoModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="eliminarProductoModalLabel">Eliminar Producto</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="formEliminarProducto" action="./php/eliminarProducto.php" method="post">
+            <div class="mb-3">
+              <label for="isbnProducto" class="form-label">Ingrese el ISBN del producto</label>
+              <input type="text" class="form-control" id="isbnProducto" name="isbnProducto"
+                placeholder="Ej: 978-3-16-148410-0" required>
+              <div class="invalid-feedback">
+                Por favor, ingrese un ISBN válido.
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              <button type="submit" class="btn btn-danger">Eliminar Producto</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Modal para Agregar Productos -->
+  <div class="modal fade" id="agregarProductoModal" tabindex="-1" aria-labelledby="agregarProductoModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="agregarProductoModalLabel">Agregar Producto (Historieta)</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="formAgregarProducto" action="./php/agregarProducto.php" method="post" class="needs-validation"
+            novalidate enctype="multipart/form-data">
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="isbn" class="form-label">ISBN</label>
+                <input type="text" class="form-control" id="isbn" name="isbn" required>
+                <div class="invalid-feedback">Por favor, introduce el ISBN.</div>
+              </div>
+              <div class="col-md-6">
+                <label for="nombre" class="form-label">Nombre</label>
+                <input type="text" class="form-control" id="nombre" name="nombre" required>
+                <div class="invalid-feedback">Por favor, introduce el nombre del producto.</div>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="imagen" class="form-label">Imagen</label>
+              <input type="file" class="form-control" id="imagen" name="imagen" accept="image/*">
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="editorial" class="form-label">Editorial</label>
+                <input type="text" class="form-control" id="editorial" name="editorial" required>
+                <div class="invalid-feedback">Por favor, introduce la editorial.</div>
+              </div>
+              <div class="col-md-6">
+                <label for="autores" class="form-label">Autores</label>
+                <input type="text" class="form-control" id="autores" name="autores" required>
+                <div class="invalid-feedback">Por favor, introduce los autores.</div>
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-md-4">
+                <label for="paginas" class="form-label">Páginas</label>
+                <input type="number" class="form-control" id="paginas" name="paginas" required>
+                <div class="invalid-feedback">Por favor, introduce el número de páginas.</div>
+              </div>
+              <div class="col-md-4">
+                <label for="tamano" class="form-label">Tamaño</label>
+                <input type="text" class="form-control" id="tamano" name="tamano" required>
+                <div class="invalid-feedback">Por favor, introduce el tamaño.</div>
+              </div>
+              <div class="col-md-4">
+                <label for="edad" class="form-label">Edad recomendada</label>
+                <input type="number" class="form-control" id="edad" name="edad" required>
+                <div class="invalid-feedback">Por favor, introduce la edad recomendada.</div>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="contenido" class="form-label">Contenido</label>
+              <textarea class="form-control" id="contenido" name="contenido" rows="3" required></textarea>
+              <div class="invalid-feedback">Por favor, introduce el contenido.</div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-md-4">
+                <label for="formato" class="form-label">Formato</label>
+                <input type="text" class="form-control" id="formato" name="formato" required>
+                <div class="invalid-feedback">Por favor, introduce el formato.</div>
+              </div>
+              <div class="col-md-4">
+                <label for="interior" class="form-label">Interior</label>
+                <input type="text" class="form-control" id="interior" name="interior">
+              </div>
+              <div class="col-md-4">
+                <label for="precio" class="form-label">Precio</label>
+                <input type="number" step="0.01" class="form-control" id="precio" name="precio" required>
+                <div class="invalid-feedback">Por favor, introduce el precio.</div>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="nombreCategoria" class="form-label">Categoría</label>
+              <select class="form-select" id="nombreCategoria" name="nombreCategoria" required>
+                <option value="">Selecciona una categoría</option>
+                <option value="Acción">Acción</option>
+                <option value="Comedia">Comedia</option>
+                <option value="Drama">Drama</option>
+                <option value="Ciencia ficción">Ciencia ficción</option>
+                <option value="Fantasía">Fantasía</option>
+                <!-- Añadir más categorías si es necesario -->
+              </select>
+              <div class="invalid-feedback">Por favor, selecciona una categoría.</div>
+            </div>
+
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              <button type="submit" class="btn btn-warning">Agregar Producto</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Modal de Login -->
+  <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered d-flex align-items-center justify-content-center">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="loginModalLabel">Iniciar sesión</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="formLogin" action="./php/login.php" method="post" class="p-4 rounded"
+            style="max-width: 400px; margin: auto;">
+            <!-- Logo centrado -->
+            <div class="text-center mb-4">
+              <img id="logoModal" height="55px" width="55px" alt="Logo">
+            </div>
+
+            <!-- Campo de usuario con ícono -->
+            <div class="mb-3 position-relative">
+              <label for="email" class="form-label">Email</label>
+              <input id="email" name="email" type="text" class="form-control" placeholder="Ingrese su email" required>
+              <i class='bx bxs-user position-absolute' style="top: 36px; right: 15px; font-size: 1.2rem;"></i>
+            </div>
+
+            <!-- Campo de contraseña con ícono -->
+            <div class="mb-3 position-relative">
+              <label for="contrasenia" class="form-label">Contraseña</label>
+              <input id="contrasenia" name="contrasenia" type="password" class="form-control"
+                placeholder="Ingrese su contraseña" required>
+              <i class='bx bxs-lock-alt position-absolute' style="top: 36px; right: 15px; font-size: 1.2rem;"></i>
+            </div>
+
+            <!-- Recordarme y olvidar contraseña -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <div class="form-check">
+                <input type="checkbox" class="form-check-input" id="rememberMe">
+                <label class="form-check-label" for="rememberMe">Recordarme</label>
+              </div>
+              <a href="#" class="text-decoration-none">¿Olvidaste la contraseña?</a>
+            </div>
+
+            <!-- Enlace para registrarse -->
+            <br>
+            <div class="text-center">
+              <p class="mb-1">¿No tienes una cuenta? <a href="#" class="text-decoration-none">Registrarse</a></p>
+            </div>
+
+            <div class="modal-footer d-flex justify-content-center mt-2">
+              <button type="submit" value="Enviar" id="btn" class="btn btn-warning">Iniciar sesión</button>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer d-flex justify-content-center mt-2">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container mb-5 mt-5">
+    <div class="row row-cols-1 row-cols-3 g-4 text-center" id="productList">
+      <!-- Aquí se cargarán los productos dinámicamente -->
+    </div>
+  </div>
+
+
+  <!-- Contenido de la página -->
+  <div id="carrouselContainer">
+    <div class="d-flex justify-content-center align-items-center">
+      <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-indicators">
+          <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active"
+            aria-current="true" aria-label="Slide 1"></button>
+          <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"
+            aria-label="Slide 2"></button>
+          <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2"
+            aria-label="Slide 3"></button>
+        </div>
+        <div class="carousel-inner">
+          <div class="carousel-item active">
+            <img src="img/carrousel1.webp" class="d-block w-100" alt="img" />
+          </div>
+          <div class="carousel-item">
+            <img src="img/carrousel2.webp" class="d-block w-100" alt="img" />
+          </div>
+          <div class="carousel-item">
+            <img src="img/carrousel3.webp" class="d-block w-100" alt="img" />
+          </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators"
+          data-bs-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators"
+          data-bs-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Products Modal -->
+  <div class="modal fade" id="modalProduct" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel"></h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body"></div>
+        <div class="modal-footer justify-content-center">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            Cerrar
+          </button>
+          <button type="button" class="btn btn-warning">Agregar al carrito</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container mt-5">
+    <h2 class="text-center mb-4">Los más comprados</h2>
+    <div class="row row-cols-1 row-cols-md-3 g-4 text-center">
+      <!-- Producto 1 -->
+      <div class="col">
+        <div class="card h-100">
+          <img src="img/00001.avif" class="card-img-top" alt="Producto 1" />
+          <div class="card-body">
+            <p class="text-success">Precio: $U558</p>
+            <h5 class="card-title">
+              THE AMAZING SPIDER-MAN: UN MUNDO SIN AMOR (PARTE 2) / MARVEL
+            </h5>
+          </div>
+          <div class="card-footer">
+            <button class="btn btn-warning w-100 mb-1">
+              Agregar al carrito
+            </button>
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-secondary w-100" data-bs-toggle="modal" data-bs-target="#modalProduct">
+              Más información
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Producto 2 -->
+      <div class="col">
+        <div class="card h-100">
+          <img src="img/00002.avif" class="card-img-top" alt="Producto 2" />
+          <div class="card-body">
+            <p class="text-success">Precio: $U621</p>
+            <h5 class="card-title">
+              UNIVERSO MARVEL: LA GUERRA DE LOS REINOS / AARON, DAUTERMAN,
+              WILSON
+            </h5>
+          </div>
+          <div class="card-footer">
+            <button class="btn btn-warning w-100 mb-1">
+              Agregar al carrito
+            </button>
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-secondary w-100" data-bs-toggle="modal" data-bs-target="#modalProduct">
+              Más información
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Producto 3 -->
+      <div class="col">
+        <div class="card h-100">
+          <img src="img/00003.avif" class="card-img-top" alt="Producto 3" />
+          <div class="card-body">
+            <p class="text-success">Precio: $U711</p>
+            <h5 class="card-title">
+              SPIDERMAN SIMBIONTE: LA ENCRUCIJADA / DAVID, LAND, LEISTEN,
+              D'ARMATA
+            </h5>
+            <p class="card-text">
+              El equipo de las anteriores miniseries ambientadas en la época
+              en que Peter vestía el traje negro sin sospechar que se trataba
+              de un simbionte alienígena te ofrece su más ambiciosa historia
+              hasta la fecha: Spidey, con su traje, viaja hasta el lugar en
+              que se encuentra atrapado El Increíble Hulk: ¡La Encrucijada!
+            </p>
+          </div>
+          <div class="card-footer">
+            <button class="btn btn-warning w-100 mb-1">
+              Agregar al carrito
+            </button>
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-secondary w-100" data-bs-toggle="modal" data-bs-target="#modalProduct">
+              Más información
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div><br><br>
+
+  <script src="./js/functions.js"></script>
+  <script src="./js/showLoginModal.js"></script>
+  <script src="./js/logout.js"></script>
+  <script src="./js/searchProducts.js"></script>
+  <script src="./js/setNombLogin.js"></script>
+  <script src="./js/cargaLogo.js"></script>
+  <script src="./js/addNavBarAdm.js"></script>
+  <script src="./js/getAllProducts.js"></script>
+  <script src="./js/getForCategories.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
+</body>
+
+</html>
